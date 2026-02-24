@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useGoldStore } from '@/stores/gold'
 import QuoteCard from '@/components/QuoteCard.vue'
 import SgeCard from '@/components/SgeCard.vue'
+import ComexCard from '@/components/ComexCard.vue'
 import BrandPriceTable from '@/components/BrandPriceTable.vue'
 import BankPriceList from '@/components/BankPriceList.vue'
 import RecycleList from '@/components/RecycleList.vue'
@@ -46,9 +47,10 @@ onUnmounted(() => {
     <main class="main">
       <!-- Tab 1：国际行情 -->
       <div v-show="activeTab === 'quote'" class="tab-panel">
+        <SgeCard />
         <QuoteCard symbol="XAU" />
         <QuoteCard symbol="GC" />
-        <SgeCard />
+        <ComexCard />
       </div>
 
       <!-- Tab 2：国内金价 -->

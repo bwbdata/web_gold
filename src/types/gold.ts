@@ -26,6 +26,19 @@ export interface SgeQuote {
   prevClose: number    // 昨收价
 }
 
+// COMEX 黄金连续合约（来自东方财富 GC00Y，单位 USD/oz）
+export interface ComexQuote {
+  code: string         // "GC00Y"
+  name: string         // "COMEX黄金"
+  price: number        // 当前价（USD/oz）
+  change: number       // 涨跌额（USD/oz）
+  changePct: number    // 涨跌幅（%）
+  high: number         // 最高价
+  low: number          // 最低价
+  open: number         // 今开价
+  prevClose: number    // 昨收价
+}
+
 // 银行金条价（来自 xxapi，单位 CNY/g）
 export interface BankBarPrice {
   bank: string         // 银行 + 产品名，如 "工商银行如意金条"
