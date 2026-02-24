@@ -1,9 +1,16 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useGoldStore } from '@/stores/gold'
 import PriceTag from './PriceTag.vue'
 import DetailRow from './DetailRow.vue'
+import { sgeStatus } from '@/utils/marketHours'
 
 const store = useGoldStore()
+
+const status = computed(() => {
+  store.countdown // 每秒更新一次作为响应式触发
+  return sgeStatus()
+})
 </script>
 
 <template>
@@ -21,6 +28,7 @@ const store = useGoldStore()
           <span class="badge">上海金交所</span>
         </div>
         <span class="tag">现货</span>
+        <span class="market-status" :class="status">{{ status === 'open' ? '交易中' : '休市' }}</span>
       </div>
 
       <div class="price-block">
@@ -87,6 +95,14 @@ const store = useGoldStore()
   padding: 1px 6px;
   border-radius: 4px;
 }
+.market-status {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.market-status.open   { color: #4CAF50; background: rgba(76,175,80,0.12); }
+.market-status.closed { color: var(--text-muted); background: transparent; }
 .price-block {
   display: flex;
   align-items: baseline;

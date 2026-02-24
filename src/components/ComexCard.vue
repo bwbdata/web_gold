@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useGoldStore } from '@/stores/gold'
 import PriceTag from './PriceTag.vue'
 import DetailRow from './DetailRow.vue'
+import { comexStatus } from '@/utils/marketHours'
 
 const store = useGoldStore()
 
@@ -10,6 +11,11 @@ const store = useGoldStore()
 const cnyPerGram = computed(() => {
   if (!store.comex || !store.usdCny) return null
   return (store.comex.price * store.usdCny / 31.1035).toFixed(2)
+})
+
+const status = computed(() => {
+  store.countdown // 每秒更新一次作为响应式触发
+  return comexStatus()
 })
 </script>
 
@@ -28,6 +34,7 @@ const cnyPerGram = computed(() => {
           <span class="badge">CME Globex</span>
         </div>
         <span class="tag">24H 电子盘</span>
+        <span class="market-status" :class="status">{{ status === 'open' ? '交易中' : '休市' }}</span>
       </div>
 
       <div class="price-block">
@@ -99,6 +106,14 @@ const cnyPerGram = computed(() => {
   padding: 1px 6px;
   border-radius: 4px;
 }
+.market-status {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.market-status.open   { color: #4CAF50; background: rgba(76,175,80,0.12); }
+.market-status.closed { color: var(--text-muted); background: transparent; }
 .price-block {
   display: flex;
   align-items: baseline;

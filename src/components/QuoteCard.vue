@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useGoldStore } from '@/stores/gold'
 import PriceTag from './PriceTag.vue'
 import DetailRow from './DetailRow.vue'
+import { londonStatus, comexStatus } from '@/utils/marketHours'
 
 const props = defineProps<{ symbol: 'XAU' | 'GC' }>()
 const store = useGoldStore()
@@ -16,6 +17,11 @@ const cnyPerGram = computed(() => {
 })
 
 const label = computed(() => props.symbol === 'XAU' ? '伦敦现货金' : '纽约黄金期货')
+
+const status = computed(() => {
+  store.countdown // 每秒更新一次作为响应式触发
+  return props.symbol === 'XAU' ? londonStatus() : comexStatus()
+})
 </script>
 
 <template>
@@ -35,6 +41,7 @@ const label = computed(() => props.symbol === 'XAU' ? '伦敦现货金' : '纽�
           <span class="badge">{{ symbol }}</span>
         </div>
         <span class="time">{{ data.date }} {{ data.time }}</span>
+        <span class="market-status" :class="status">{{ status === 'open' ? '交易中' : '休市' }}</span>
       </div>
 
       <div class="price-block">
@@ -98,6 +105,14 @@ const label = computed(() => props.symbol === 'XAU' ? '伦敦现货金' : '纽�
   font-size: 11px;
   color: var(--text-muted);
 }
+.market-status {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.market-status.open   { color: #4CAF50; background: rgba(76,175,80,0.12); }
+.market-status.closed { color: var(--text-muted); background: transparent; }
 .price-block {
   display: flex;
   align-items: baseline;
