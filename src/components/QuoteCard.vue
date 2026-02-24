@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useGoldStore } from '@/stores/gold'
 import PriceTag from './PriceTag.vue'
 import DetailRow from './DetailRow.vue'
-import { londonStatus, comexStatus } from '@/utils/marketHours'
+import { londonStatus, comexStatus, gcRegularStatus } from '@/utils/marketHours'
 
 const props = defineProps<{ symbol: 'XAU' | 'GC' }>()
 const store = useGoldStore()
@@ -20,7 +20,7 @@ const label = computed(() => props.symbol === 'XAU' ? '伦敦现货金' : '纽�
 
 const status = computed(() => {
   store.countdown // 每秒更新一次作为响应式触发
-  return props.symbol === 'XAU' ? londonStatus() : comexStatus()
+  return props.symbol === 'XAU' ? londonStatus() : gcRegularStatus()
 })
 </script>
 

@@ -61,7 +61,19 @@ export function londonStatus(): MarketStatus {
 }
 
 /**
- * COMEX 黄金期货 / CME Globex（America/New_York，自动处理 EDT/EST）
+ * COMEX 黄金期货正常交易时段（America/New_York，自动处理 EDT/EST）
+ * 用于 QuoteCard GC（纽约黄金期货）
+ * 正常交易时段：周一至周五 08:20–13:30 ET
+ */
+export function gcRegularStatus(): MarketStatus {
+  const { day, min } = getZoneInfo('America/New_York')
+  if (day === 0 || day === 6) return 'closed'
+  return (min >= 500 && min < 810) ? 'open' : 'closed'
+}
+
+/**
+ * COMEX CME Globex 电子盘（America/New_York，自动处理 EDT/EST）
+ * 用于 ComexCard（国际暗金·COMEX 隔夜黄金）
  * 周日 18:00 – 周五 17:00 ET，每日 17:00–18:00 维护暂停
  */
 export function comexStatus(): MarketStatus {
