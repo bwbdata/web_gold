@@ -1,0 +1,1 @@
+阅读project.md、readme.md、step.md，进行项目开发
