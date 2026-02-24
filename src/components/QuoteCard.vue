@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useGoldStore } from '@/stores/gold'
 import PriceTag from './PriceTag.vue'
 import DetailRow from './DetailRow.vue'
-import { londonStatus, comexStatus, gcRegularStatus } from '@/utils/marketHours'
+import { londonStatus, gcRegularStatus } from '@/utils/marketHours'
 
 const props = defineProps<{ symbol: 'XAU' | 'GC' }>()
 const store = useGoldStore()
