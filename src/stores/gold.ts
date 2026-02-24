@@ -55,7 +55,7 @@ export const useGoldStore = defineStore('gold', () => {
     }
 
     lastUpdated.value = new Date()
-    countdown.value = 30
+    countdown.value = 60
     loading.value = false
   }
 

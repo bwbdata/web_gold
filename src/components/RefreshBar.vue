@@ -9,8 +9,8 @@ const lastTime = computed(() => {
   return store.lastUpdated.toLocaleTimeString('zh-CN', { hour12: false })
 })
 
-// 进度条宽度百分比（30s 倒计时，从 100% → 0%）
-const progress = computed(() => `${(store.countdown / 30) * 100}%`)
+// 进度条宽度百分比（60s 倒计时，从 100% → 0%）
+const progress = computed(() => `${(store.countdown / 60) * 100}%`)
 
 function onRefresh() {
   store.fetchAll()
