@@ -1,16 +1,13 @@
 import type { SgeQuote, ComexQuote } from '@/types/gold'
 
-const SGE_URL =
-  'https://push2.eastmoney.com/api/qt/stock/get' +
-  '?secid=118.AU9999' +
-  '&fields=f43,f44,f45,f46,f57,f58,f60,f169,f170' +
-  '&ut=fa5fd1943c7b386f172d6893dbfba10b'
+// push2delay.eastmoney.com 支持 CORS（返回 Access-Control-Allow-Origin），
+// 可以直接从浏览器 fetch，不需要任何代理
+const BASE = 'https://push2delay.eastmoney.com/api/qt/stock/get'
+const UT   = '&ut=fa5fd1943c7b386f172d6893dbfba10b'
+const FIELDS = '&fields=f43,f44,f45,f46,f57,f58,f60,f169,f170'
 
-const COMEX_URL =
-  'https://push2.eastmoney.com/api/qt/stock/get' +
-  '?secid=101.GC00Y' +
-  '&fields=f43,f44,f45,f46,f57,f58,f60,f169,f170' +
-  '&ut=fa5fd1943c7b386f172d6893dbfba10b'
+const SGE_URL   = `${BASE}?secid=118.AU9999${FIELDS}${UT}`
+const COMEX_URL = `${BASE}?secid=101.GC00Y${FIELDS}${UT}`
 
 export async function fetchSgeGold(): Promise<SgeQuote> {
   const res = await fetch(SGE_URL)
