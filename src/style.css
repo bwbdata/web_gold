@@ -1,0 +1,50 @@
+/* ===== CSS Variables — Gold Dark Theme ===== */
+:root {
+  --gold-primary:   #D4AF37;
+  --gold-light:     #F5E87A;
+  --gold-dark:      #7A5C00;
+  --up-color:       #E53935;
+  --down-color:     #26A69A;
+  --flat-color:     #757575;
+  --bg-page:        #0F0F0F;
+  --bg-card:        #1A1A1A;
+  --bg-header:      #141414;
+  --border-color:   #2A2A2A;
+  --text-primary:   #E8E8E8;
+  --text-secondary: #B0B0B0;
+  --text-muted:     #707070;
+  --skeleton-color: #252525;
+
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Reset ===== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, p { margin: 0; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}

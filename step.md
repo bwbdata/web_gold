@@ -7,12 +7,12 @@
 
 ## 当前进度
 
-**阶段：规划完成，尚未初始化项目**
+**阶段：核心代码全部完成，构建通过 ✅**
 
 | 项 | 内容 |
 |----|------|
-| 上次完成步骤 | Step 0 — 规划文档（README.md / project.md / step.md） |
-| 下次从哪里开始 | **Step 1 — 初始化 Vite 项目** |
+| 上次完成步骤 | Step 11 — App.vue 整合（`npm run build` 零错误） |
+| 下次从哪里开始 | **Step 13 — 本地联调测试**（`npm run dev`，验证接口数据） |
 | 遗留问题 | 无 |
 
 ---
@@ -33,159 +33,90 @@
 
 ## Step 1 — 初始化项目
 
-- [ ] 在 `web_gold/` 目录下运行 `npm create vite@latest . -- --template vue-ts`
-- [ ] 安装依赖：`npm install`
-- [ ] 安装 Pinia：`npm install pinia`
-- [ ] 删除 Vite 模板默认文件（`src/assets/vue.svg`、`src/components/HelloWorld.vue`、`src/style.css` 模板内容等）
-- [ ] 验证 `npm run dev` 能正常启动
+- [x] 在 `web_gold/` 目录下运行 `npm create vite@latest . -- --template vue-ts`
+- [x] 安装依赖：`npm install`
+- [x] 安装 Pinia：`npm install pinia`
+- [x] 删除 Vite 模板默认文件（`HelloWorld.vue`、`vue.svg` 等）
+- [x] 验证 `npm run dev` 能正常启动
 
-**备注：**
+**备注：** 目录已有文件，用临时目录生成后复制过来
 
 ---
 
 ## Step 2 — 基础配置
 
-- [ ] 配置 `vite.config.ts`：
-  - server.proxy 将 `/api/` 转发到 `http://qt.gtimg.cn/`
-  - 设置 `base: './'`（方便静态部署）
-- [ ] 配置 `tsconfig.json`：确认 `strict: true`、路径别名 `@` → `src/`
-- [ ] 在 `index.html` 补充 viewport meta、title、主题色 meta
+- [x] 配置 `vite.config.ts`：proxy `/api/` → `http://qt.gtimg.cn/`，`base: './'`，`@` 别名
+- [x] 配置 `tsconfig.app.json`：`baseUrl + paths` 支持 `@` 别名
+- [x] 在 `index.html` 补充 viewport meta、title、移动端 meta
 
-**备注：**
+**备注：** tsconfig 需同时配置 paths 才能让 vue-tsc 识别 `@/` 别名
 
 ---
 
 ## Step 3 — 类型定义
 
-- [ ] 创建 `src/types/gold.ts`，定义：
-  - `GoldQuote`（XAU/GC，来自 gtimg）
-  - `SgeQuote`（Au9999，来自东方财富）
-  - `BankBarPrice`（银行金条）
-  - `BrandPrice`（品牌零售）
-  - `RecyclePrice`（黄金回收）
-
-**备注：**
+- [x] 创建 `src/types/gold.ts`：`GoldQuote / SgeQuote / BankBarPrice / BrandPrice / RecyclePrice`
 
 ---
 
 ## Step 4 — 数据解析工具
 
-- [ ] 创建 `src/utils/parser.ts`：
-  - `parseGtimgResponse(raw: string): GoldQuote`
-  - 使用 `TextDecoder('gbk')` 处理编码（或在 fetch 层处理）
-  - 字段提取：index 0/1/4/5/6/7/8/12/13
-
-**备注：**
+- [x] 创建 `src/utils/parser.ts`：`parseGtimgResponse(raw, symbol)` 解析 GBK 文本
+- [x] 使用辅助函数 `get(i)` 避免 `parts[i]` 可能为 undefined 的 strict 报错
 
 ---
 
 ## Step 5 — API 请求封装
 
-- [ ] 创建 `src/api/gtimg.ts`：`fetchGtimgGold(symbol: 'hf_XAU' | 'hf_GC'): Promise<GoldQuote>`
-  - 请求路径：`/api/q=hf_XAU`（走 Vite proxy）
-  - Response 用 `arrayBuffer()` + `TextDecoder('gbk')` 解码
-- [ ] 创建 `src/api/eastmoney.ts`：`fetchSgeGold(): Promise<SgeQuote>`
-  - URL：`https://push2.eastmoney.com/api/qt/stock/get?secid=118.AU9999&fields=f43,f44,f45,f46,f57,f58,f60,f169,f170&ut=fa5fd1943c7b386f172d6893dbfba10b`
-  - 价格字段 ÷100
-- [ ] 创建 `src/api/xxapi.ts`：`fetchXxapiGold(): Promise<{bankBars, brands, recycles}>`
-  - URL：`https://v2.xxapi.cn/api/goldprice`
-- [ ] 创建 `src/api/exchange.ts`：`fetchUsdCny(): Promise<number>`
-  - URL：`https://open.er-api.com/v6/latest/USD`
-  - 返回 `data.rates.CNY`
-
-**备注：**
+- [x] `src/api/gtimg.ts`：GBK arrayBuffer → TextDecoder('gbk') → parseGtimgResponse
+- [x] `src/api/eastmoney.ts`：东方财富 Au9999，所有价格字段 ÷100
+- [x] `src/api/xxapi.ts`：xxapi goldprice，解构三个数组
+- [x] `src/api/exchange.ts`：open.er-api.com 取 rates.CNY
 
 ---
 
 ## Step 6 — Pinia Store
 
-- [ ] 创建 `src/stores/gold.ts`：
-  - State：`xau / gc / sge / usdCny / bankBars / brands / recycles / loading / error / lastUpdated / countdown`
-  - `fetchAll()`：`Promise.allSettled` 并发请求五路接口
-  - `startAutoRefresh()`：`setInterval` 每秒减 countdown，归零时调 fetchAll
-  - `stopAutoRefresh()`：清除 interval
-- [ ] 在 `src/main.ts` 注册 Pinia
-
-**备注：**
+- [x] `src/stores/gold.ts`：Promise.allSettled 并发五路接口，单路失败不阻断其他
+- [x] `src/main.ts`：注册 createPinia()
 
 ---
 
 ## Step 7 — 基础子组件
 
-- [ ] 创建 `src/components/PriceTag.vue`
-  - Props：`price: number, change: number, changePct: number, unit?: string`
-  - 涨红跌绿平灰 + ↑↓ 箭头
-- [ ] 创建 `src/components/DetailRow.vue`
-  - Props：`label: string, value: string | number, highlight?: boolean`
-  - 用于展示高/低/开/收单行数据
-
-**备注：**
+- [x] `PriceTag.vue`：涨红跌绿平灰 + ▲▼ 箭头
+- [x] `DetailRow.vue`：label / value 双列行
 
 ---
 
 ## Step 8 — 行情卡片组件
 
-- [ ] 创建 `src/components/QuoteCard.vue`
-  - Props：`symbol: 'XAU' | 'GC'`
-  - 显示：市场名、当前价（USD/oz）、≈人民币价（CNY/g，由 usdCny 换算）、涨跌额/幅、高/低/开/收
-  - Loading skeleton（灰色占位块）/ Error 状态
-- [ ] 创建 `src/components/SgeCard.vue`
-  - 无 Props，从 store 读 sge
-  - 显示：黄金9999（上海金交所）、当前价（CNY/g）、涨跌额/幅、高/低/开/收
-  - Loading / Error 状态
-
-**备注：**
+- [x] `QuoteCard.vue`：XAU/GC，USD/oz + 换算 CNY/g（÷31.1035）+ 骨架屏
+- [x] `SgeCard.vue`：Au9999 CNY/g，金色边框区分
 
 ---
 
 ## Step 9 — 国内金价组件
 
-- [ ] 创建 `src/components/BrandPriceTable.vue`
-  - 从 store 读 brands
-  - 横向滚动表格：品牌 / 黄金饰品 / 金条 / 铂金
-  - "-" 值显示为 `—`
-- [ ] 创建 `src/components/BankPriceList.vue`
-  - 从 store 读 bankBars
-  - 列表卡片：银行名称 + 价格（元/克）
-
-**备注：**
+- [x] `BrandPriceTable.vue`：品牌去重，横向滚动表格（黄金/金条/铂金）
+- [x] `BankPriceList.vue`：银行金条价列表
+- [x] `RecycleList.vue`：回收价按日期分组展示
 
 ---
 
-## Step 10 — 回收价组件
+## Step 10 — 刷新栏组件
 
-- [ ] 创建 `src/components/RecycleList.vue`
-  - 从 store 读 recycles
-  - 按 updated_date 分组，展示品类 + 回收价
-
-**备注：**
+- [x] `RefreshBar.vue`：30s 倒计时进度条、手动刷新按钮、最后更新时间
 
 ---
 
-## Step 11 — 刷新栏组件
+## Step 11 — App.vue 整合
 
-- [ ] 创建 `src/components/RefreshBar.vue`
-  - 显示「最后更新 HH:mm:ss」
-  - 30 秒倒计时进度条（CSS `animation: linear`）
-  - 手动刷新按钮（点击时旋转动画 + 调 store.fetchAll）
+- [x] `style.css`：CSS Variables 黄金深色主题，全局 reset
+- [x] `App.vue`：Header（标题+日期+汇率徽章）、底部 Tab 导航（行情/国内金价/回收价）、RefreshBar
+- [x] `npm run build` 通过，产物：JS 77.75kB（gzip 30.47kB）、CSS 10.68kB
 
-**备注：**
-
----
-
-## Step 12 — App.vue 整合
-
-- [ ] 编写 `src/App.vue`：
-  - Header：标题「黄金行情」+ 日期 + **汇率徽章** `USD/CNY 6.92`
-  - 底部 Tab 导航：行情 / 国内金价 / 回收价（固定底部，`position: fixed`）
-  - Tab 1 行情页：`<QuoteCard symbol="XAU" />` + `<QuoteCard symbol="GC" />` + `<SgeCard />`
-  - Tab 2 国内金价：`<BrandPriceTable />` + `<BankPriceList />`
-  - Tab 3 回收价：`<RecycleList />`
-  - `<RefreshBar />`（吸附在内容区底部 Tab 之上）
-- [ ] 编写全局 CSS（CSS Variables 金色主题、深色背景、移动端适配）
-- [ ] `onMounted` 调用 `store.fetchAll()` + `store.startAutoRefresh()`，`onUnmounted` 调用 `stopAutoRefresh()`
-
-**备注：**
+**备注：** 修复了三处 TS 错误：tsconfig paths 别名、parser 数组越界、QuoteCard unused var
 
 ---
 
@@ -221,8 +152,9 @@
 
 ---
 
-## 版本节点
+## Step 12 — 版本节点
 
 | 日期 | 版本 | 完成内容 |
 |------|------|----------|
 | 2026-02-24 | v0.1 | 完成规划文档（Step 0） |
+| 2026-02-24 | v0.2 | 核心代码完成，构建通过（Step 1–11） |
