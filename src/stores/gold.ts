@@ -4,7 +4,7 @@ import type { GoldQuote, SgeQuote, ComexQuote, BankBarPrice, BrandPrice, Recycle
 import { fetchGtimgGold } from '@/api/gtimg'
 import { fetchSgeGold, fetchComexGold } from '@/api/eastmoney'
 import { fetchXxapiGold } from '@/api/xxapi'
-import { fetchUsdCny } from '@/api/exchange'
+import { fetchRates } from '@/api/exchange'
 
 export const useGoldStore = defineStore('gold', () => {
   const xau        = ref<GoldQuote | null>(null)
@@ -12,6 +12,7 @@ export const useGoldStore = defineStore('gold', () => {
   const sge        = ref<SgeQuote | null>(null)
   const comex      = ref<ComexQuote | null>(null)
   const usdCny     = ref<number>(0)
+  const jpyCny     = ref<number>(0)
   const bankBars   = ref<BankBarPrice[]>([])
   const brands     = ref<BrandPrice[]>([])
   const recycles   = ref<RecyclePrice[]>([])
@@ -31,7 +32,7 @@ export const useGoldStore = defineStore('gold', () => {
       fetchGtimgGold('hf_GC'),
       fetchSgeGold(),
       fetchComexGold(),
-      fetchUsdCny(),
+      fetchRates(),
       fetchXxapiGold(),
     ])
 
@@ -41,7 +42,10 @@ export const useGoldStore = defineStore('gold', () => {
     if (gcRes.status === 'fulfilled')    gc.value     = gcRes.value
     if (sgeRes.status === 'fulfilled')   sge.value    = sgeRes.value
     if (comexRes.status === 'fulfilled') comex.value  = comexRes.value
-    if (rateRes.status === 'fulfilled')  usdCny.value = rateRes.value
+    if (rateRes.status === 'fulfilled') {
+      usdCny.value = rateRes.value.usdCny
+      jpyCny.value = rateRes.value.jpyCny
+    }
     if (xxapiRes.status === 'fulfilled') {
       bankBars.value = xxapiRes.value.bankBars
       brands.value   = xxapiRes.value.brands
@@ -78,7 +82,7 @@ export const useGoldStore = defineStore('gold', () => {
   }
 
   return {
-    xau, gc, sge, comex, usdCny,
+    xau, gc, sge, comex, usdCny, jpyCny,
     bankBars, brands, recycles,
     loading, error, lastUpdated, countdown,
     fetchAll, startAutoRefresh, stopAutoRefresh,

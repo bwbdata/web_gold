@@ -37,13 +37,13 @@ export function sgeStatus(): MarketStatus {
 
   if (day === 0) return 'closed' // 周日全天休市
 
-  // 周六：仅周五夜盘延续的 00:00–02:30
-  if (day === 6) return min < 150 ? 'open' : 'closed'
+  // 周六：周五无夜盘，全天休市
+  if (day === 6) return 'closed'
 
   // 周一–周五
   const morning    = min >= 540  && min < 690   // 09:00–11:30
   const afternoon  = min >= 810  && min < 930   // 13:30–15:30
-  const nightStart = min >= 1200                // 20:00–23:59
+  const nightStart = min >= 1200 && day !== 5   // 20:00–23:59，周五无夜盘
   // 夜盘溢出（周二–周五凌晨），周一凌晨不算（周日无夜盘）
   const earlyMorn  = day >= 2 && min < 150
 

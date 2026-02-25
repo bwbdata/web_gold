@@ -8,9 +8,10 @@ import BrandPriceTable from '@/components/BrandPriceTable.vue'
 import BankPriceList from '@/components/BankPriceList.vue'
 import RecycleList from '@/components/RecycleList.vue'
 import RefreshBar from '@/components/RefreshBar.vue'
+import ExchangeTab from '@/components/ExchangeTab.vue'
 
 const store = useGoldStore()
-const activeTab = ref<'quote' | 'domestic' | 'recycle'>('quote')
+const activeTab = ref<'quote' | 'domestic' | 'recycle' | 'exchange'>('quote')
 
 const today = computed(() => new Date().toLocaleDateString('zh-CN', {
   year: 'numeric', month: 'long', day: 'numeric', weekday: 'short',
@@ -63,6 +64,11 @@ onUnmounted(() => {
       <div v-show="activeTab === 'recycle'" class="tab-panel">
         <RecycleList />
       </div>
+
+      <!-- Tab 4：汇率 -->
+      <div v-show="activeTab === 'exchange'" class="tab-panel">
+        <ExchangeTab />
+      </div>
     </main>
 
     <!-- 刷新状态栏 -->
@@ -93,6 +99,14 @@ onUnmounted(() => {
       >
         <span class="tab-icon">♻️</span>
         <span class="tab-label">回收价</span>
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'exchange' }"
+        @click="activeTab = 'exchange'"
+      >
+        <span class="tab-icon">💱</span>
+        <span class="tab-label">汇率</span>
       </button>
     </nav>
   </div>
